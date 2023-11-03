@@ -1,12 +1,11 @@
 [tool.poetry]
 name = "bud_ecosystem_utils"
-version = "0.16.0"
+version = "0.17.0"
 description = ""
 authors = ["Rahul V Ramesh <rahulvramesh@hotmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-dapr = "^1.11.0"
 accelerate = "^0.23.0"
 tqdm = "^4.66.0"
 smart-open = {extras = ["s3"], version = "^6.4.0"}
