@@ -1,8 +1,9 @@
+import os
 from ray.job_submission import JobSubmissionClient, JobStatus
 
 
 def submit_job_to_ray(
-    data, session_id, node_id, callback_id, entrypoint=None, runtime_env=None
+    data, session_id, node_id, callback_id, requirements_file="requirements.txt", entrypoint=None, runtime_env=None
 ):
     if isinstance(data, dict):
         args = ()
@@ -17,7 +18,7 @@ def submit_job_to_ray(
     _runtime_env = runtime_env or {}
     blob_provider = os.environ.get("BLOB_PROVIDER", "s3")
 
-    with open("requirements.txt", "r") as fin:
+    with open(requirements_file, "r") as fin:
         requirements = fin.read().splitlines()
 
     runtime_env = {
