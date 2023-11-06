@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bud_ecosystem_utils"
-version = "0.17.0"
+version = "0.18.0"
 description = ""
 authors = ["Rahul V Ramesh <rahulvramesh@hotmail.com>"]
 
