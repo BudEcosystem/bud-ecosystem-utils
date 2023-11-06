@@ -32,6 +32,7 @@ def submit_job_to_ray(
         for line in lines:
             if re.split("\<=|\>=|==|\<|\>", line)[0] in ["ray"]:
                 continue
+            requirements.append(line)
 
     runtime_env = {
         "working_dir": "./",
