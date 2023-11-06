@@ -72,7 +72,9 @@ def submit_job_to_ray(
     runtime_env["env_vars"]["SESSION_ID"] = session_id
     runtime_env["env_vars"]["NODE_ID"] = node_id
     runtime_env["env_vars"]["CALLBACK_ID"] = callback_id
-    runtime_env["env_vars"]["INTERNAL_ENDPOINT"] = os.environ["INTERNAL_ENDPOINT"]
+
+    for key in ["BUD_MLOPS_API_URL", "BUD_MLOPS_API_TOKEN", "INTERNAL_ENDPOINT"]:
+        runtime_env["env_vars"][key] = os.environ[key]
 
     client = JobSubmissionClient(os.environ["RAY_HEAD_URL"])
     job_id = client.submit_job(
