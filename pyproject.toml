@@ -7,7 +7,6 @@ authors = ["Rahul V Ramesh <rahulvramesh@hotmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 dapr = "^1.11.0"
-accelerate = "^0.23.0"
 tqdm = "^4.66.0"
 smart-open = {extras = ["s3"], version = "^6.4.0"}
 ray = "^2.7.1"
