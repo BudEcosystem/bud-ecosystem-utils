@@ -310,7 +310,7 @@ def download_dataset(dataset_name_or_id, **kwargs):
         dataset_name_or_id = dataset["source"]
 
     if does_dataset_exist_in_hf_hub(dataset_name_or_id):
-        return dataset_name_or_id, "hf"
+        return dataset_name_or_id, "hf", is_uuid
     elif dataset_name_or_id.startswith("s3://"):
         from bud_ecosystem_utils.blob import BlobService
         blob_service = BlobService()
@@ -321,7 +321,7 @@ def download_dataset(dataset_name_or_id, **kwargs):
     if "image_column" in kwargs:
         extract_and_process_image_archives(savepath)
 
-    return savepath, "local"
+    return savepath, "local", is_uuid
 
 
 def download_model(model_name_or_id, **kwargs):
@@ -337,7 +337,7 @@ def download_model(model_name_or_id, **kwargs):
         model_name_or_id = model["source"]
 
     if does_model_exist_in_hf_hub(model_name_or_id):
-        return model_name_or_id, "hf"
+        return model_name_or_id, "hf", is_uuid
     else:
         raise NotImplementedError("Only supports Hugging Face models")
     
