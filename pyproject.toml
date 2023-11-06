@@ -6,11 +6,11 @@ authors = ["Rahul V Ramesh <rahulvramesh@hotmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-accelerate = "^0.23.0"
+accelerate = "^0.21.0"
 tqdm = "^4.66.0"
 smart-open = {extras = ["s3"], version = "^6.4.0"}
 ray = "^2.7.1"
-huggingface-hub = "^0.18.0"
+huggingface-hub = "^0.16.4"
 
 [tool.poetry.dev-dependencies]
 
