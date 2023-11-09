@@ -64,6 +64,24 @@ class BudMLOpsClient:
 
         return dataset[0]
 
+    def fetch_model(self, model_id=None, model_name=None):
+        params = {}
+        if model_id is not None:
+            params["model_id"] = model_id
+        if model_name is not None:
+            params["model_name"] = model_name
+        resp = self.api_request(
+            "get", "/models/", params=params
+        )
+        if not resp.json()["status"]:
+            raise ValueError("Model fetching failed!!!")
+
+        model = resp.json()["data"]
+        if not len(model):
+            raise ValueError(f"Model doesn't exist")
+
+        return model[0]
+
     def download_dataset(self, dataset_name: str, save_dir: str = None):
         dataset = self.fetch_dataset(dataset_name=dataset_name)
         endpoint = f"/dataset/download/{dataset['dataset_id']}"
@@ -297,7 +315,7 @@ def extract_and_process_image_archives(dataset_dir: str, image_column: str):
         save_as_metadata(metadata, metadata_path)
 
 
-def download_dataset(dataset_name_or_id, **kwargs):
+def resolve_dataset(dataset_name_or_id, **kwargs):
     try:
         obj = UUID(dataset_name_or_id, version=4)
         is_uuid = str(obj) == dataset_name_or_id
@@ -324,7 +342,7 @@ def download_dataset(dataset_name_or_id, **kwargs):
     return savepath, "local", is_uuid
 
 
-def download_model(model_name_or_id, **kwargs):
+def resolve_model(model_name_or_id, **kwargs):
     try:
         obj = UUID(model_name_or_id, version=4)
         is_uuid = str(obj) == model_name_or_id
