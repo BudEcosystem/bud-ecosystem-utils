@@ -48,12 +48,13 @@ class BudMLOpsClient:
 
     def fetch_dataset(self, dataset_id=None, dataset_name=None):
         params = {}
+        endpoint = "/dataset/"
         if dataset_id is not None:
-            params["dataset_id"] = dataset_id
+            endpoint += dataset_id
         if dataset_name is not None:
             params["dataset_name"] = dataset_name
         resp = self.api_request(
-            "get", "/dataset/", params=params
+            "get", endpoint, params=params
         )
         if not resp.json()["status"]:
             raise ValueError("Dataset fetching failed!!!")
@@ -66,12 +67,13 @@ class BudMLOpsClient:
 
     def fetch_model(self, model_id=None, model_name=None):
         params = {}
+        endpoint = "/models/"
         if model_id is not None:
-            params["model_id"] = model_id
+            endpoint += model_id
         if model_name is not None:
             params["model_name"] = model_name
         resp = self.api_request(
-            "get", "/models/", params=params
+            "get", endpoint, params=params
         )
         if not resp.json()["status"]:
             raise ValueError("Model fetching failed!!!")
