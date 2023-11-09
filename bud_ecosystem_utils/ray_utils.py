@@ -11,12 +11,17 @@ def submit_job_to_ray(
     requirements_file="requirements.txt",
     entrypoint=None,
     runtime_env=None,
+    store_true_args=None
 ):
     if isinstance(data, dict):
         args = ()
+        store_true_args = store_true_args or []
         for key, value in data.items():
-            if value is not None:
-                args += (f"--{key}", str(value))
+            if value is not None and key not in store_true_args:
+                value = str(value)
+                args += (f"--{key}", value if len(value.split()) == 1 else f'"{value}"')
+            elif value == True and key in store_true_args:
+                args += (f"--{key}",)
     elif isinstance(data, tuple):
         args = data
     else:
