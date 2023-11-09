@@ -63,7 +63,7 @@ class BudMLOpsClient:
         if not len(dataset):
             raise ValueError(f"Dataset doesn't exist")
 
-        return dataset[0]
+        return dataset[0] if dataset_id is None else dataset
 
     def fetch_model(self, model_id=None, model_name=None):
         params = {}
@@ -82,7 +82,7 @@ class BudMLOpsClient:
         if not len(model):
             raise ValueError(f"Model doesn't exist")
 
-        return model[0]
+        return model[0] if model_id is None else model
 
     def download_dataset(self, dataset_name: str, save_dir: str = None):
         dataset = self.fetch_dataset(dataset_name=dataset_name)
