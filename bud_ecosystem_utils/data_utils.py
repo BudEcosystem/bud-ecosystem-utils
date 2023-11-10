@@ -277,7 +277,9 @@ def save_as_metadata(metadata, save_path):
             raise NotImplementedError(f"{Path(save_path).suffix} is not supported")
 
 
-def extract_and_process_image_archives(dataset_dir: str, image_column: str, skip_metadata: bool = False):
+def extract_and_process_image_archives(dataset_dir: str, image_column: str = None, skip_metadata: bool = False):
+    if image_column is None and not skip_metadata:
+        raise ValueError("'image_column' is missing")
     if not os.path.isdir(dataset_dir):
         raise FileNotFoundError(f"Couldn't locate dataset dir '{dataset_dir}'")
 
@@ -346,7 +348,7 @@ def resolve_dataset(dataset_name_or_id, **kwargs):
         raise NotImplementedError("Only supports Hugging Face and AWS S3 datasets")
 
     if "image_column" in kwargs:
-        extract_and_process_image_archives(savepath)
+        extract_and_process_image_archives(savepath, kwargs["image_column"])
     elif dataset_type == 2:
         savepath = extract_and_process_image_archives(savepath, skip_metadata=True)
 
