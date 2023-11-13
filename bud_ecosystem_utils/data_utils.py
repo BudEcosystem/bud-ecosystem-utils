@@ -291,7 +291,11 @@ def save_as_metadata(metadata, save_path):
             raise NotImplementedError(f"{Path(save_path).suffix} is not supported")
 
 
-def extract_and_process_image_archives(dataset_dir: str, image_column: str):
+def extract_and_process_image_archives(
+    dataset_dir: str, image_column: str = None, skip_metadata: bool = False
+):
+    if image_column is None and not skip_metadata:
+        raise ValueError("'image_column' is missing")
     if not os.path.isdir(dataset_dir):
         raise FileNotFoundError(f"Couldn't locate dataset dir '{dataset_dir}'")
 
@@ -311,6 +315,9 @@ def extract_and_process_image_archives(dataset_dir: str, image_column: str):
                 f"Couldn't extract images.zip file '{os.path.join(dataset_dir, 'images.zip')}', e => {e}"
             )
             raise Exception("Couldn't extract images.zip file")
+
+        if skip_metadata:
+            return os.path.join(dataset_dir, "images")
 
         metadata_path = None
         if os.path.isfile(os.path.join(dataset_dir, "metadata.jsonl")):
@@ -333,6 +340,7 @@ def extract_and_process_image_archives(dataset_dir: str, image_column: str):
             data[image_column] = os.path.join(dataset_dir, "images", data[image_column])
 
         save_as_metadata(metadata, metadata_path)
+        return dataset_dir
 
 
 def resolve_dataset(dataset_name_or_id, **kwargs):
@@ -346,6 +354,9 @@ def resolve_dataset(dataset_name_or_id, **kwargs):
         mlops_client = BudMLOpsClient()
         dataset = mlops_client.fetch_dataset(dataset_id=dataset_name_or_id)
         dataset_name_or_id = dataset["source"]
+        dataset_type = dataset["type"]
+    else:
+        dataset_type = 1
 
     if does_dataset_exist_in_hf_hub(dataset_name_or_id):
         return dataset_name_or_id, "hf", is_uuid
@@ -361,7 +372,9 @@ def resolve_dataset(dataset_name_or_id, **kwargs):
         raise NotImplementedError("Only supports Hugging Face and AWS S3 datasets")
 
     if "image_column" in kwargs:
-        extract_and_process_image_archives(savepath)
+        extract_and_process_image_archives(savepath, kwargs["image_column"])
+    elif dataset_type == 2:
+        savepath = extract_and_process_image_archives(savepath, skip_metadata=True)
 
     return savepath, "local", is_uuid
 
