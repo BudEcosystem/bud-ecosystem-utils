@@ -43,7 +43,8 @@ class BudMLOpsClient:
     @staticmethod
     def multi_urljoin(*parts):
         return urljoin(
-            parts[0], "/".join(quote_plus(part.strip("/"), safe="/") for part in parts[1:])
+            parts[0],
+            "/".join(quote_plus(part.strip("/"), safe="/") for part in parts[1:]),
         )
 
     def fetch_dataset(self, dataset_id=None, dataset_name=None):
@@ -53,9 +54,7 @@ class BudMLOpsClient:
             endpoint += dataset_id
         if dataset_name is not None:
             params["dataset_name"] = dataset_name
-        resp = self.api_request(
-            "get", endpoint, params=params
-        )
+        resp = self.api_request("get", endpoint, params=params)
         if not resp.json()["status"]:
             raise ValueError("Dataset fetching failed!!!")
 
@@ -72,9 +71,7 @@ class BudMLOpsClient:
             endpoint += model_id
         if model_name is not None:
             params["model_name"] = model_name
-        resp = self.api_request(
-            "get", endpoint, params=params
-        )
+        resp = self.api_request("get", endpoint, params=params)
         if not resp.json()["status"]:
             raise ValueError("Model fetching failed!!!")
 
@@ -150,9 +147,7 @@ class BudMLOpsClient:
                 )
 
         if image_dirpath is not None and archive_file is None:
-            archive_file = create_zipfile_buffer_from_dir(
-                image_dirpath
-            ).getbuffer()
+            archive_file = create_zipfile_buffer_from_dir(image_dirpath).getbuffer()
         elif archive_file is not None:
             archive_file = open(archive_file, "rb")
 
@@ -177,15 +172,34 @@ class BudMLOpsClient:
         print("[INFO] Dataset succefully created")
         return resp.json()
 
-    def register_model(self, model_name: str, source: str, model_type: str, family: str, base_model_id: str = None):
+    def register_model(
+        self,
+        model_name: str,
+        source: str,
+        model_type: str,
+        family: str,
+        base_model_id: str = None,
+    ):
         families = {"causal": 0, "sd1_5": 1, "sdxl": 2}
         model_types = {"adapter": 0, "delta": 1, "full": 2}
         if model_type not in model_types:
-            raise ValueError(f"Only supports model_type of the following {tuple(model_types.keys())}")
+            raise ValueError(
+                f"Only supports model_type of the following {tuple(model_types.keys())}"
+            )
         if family not in families:
-            raise ValueError(f"Only supports family of the following {tuple(families.keys())}")
+            raise ValueError(
+                f"Only supports family of the following {tuple(families.keys())}"
+            )
 
-        if source.split("://")[0] in ["s3", "gs", "azure", "http", "https", "ftp", "sftp"]:
+        if source.split("://")[0] in [
+            "s3",
+            "gs",
+            "azure",
+            "http",
+            "https",
+            "ftp",
+            "sftp",
+        ]:
             source_type = 2
         else:
             source_type = 0
@@ -199,7 +213,7 @@ class BudMLOpsClient:
                 "type": (None, model_types[model_type]),
                 "source_type": (None, source_type),
                 "family": (None, families[family]),
-                "base_model_id": (None, base_model_id)
+                "base_model_id": (None, base_model_id),
             },
         )
         print("[INFO] Model succefully created")
@@ -277,7 +291,9 @@ def save_as_metadata(metadata, save_path):
             raise NotImplementedError(f"{Path(save_path).suffix} is not supported")
 
 
-def extract_and_process_image_archives(dataset_dir: str, image_column: str = None, skip_metadata: bool = False):
+def extract_and_process_image_archives(
+    dataset_dir: str, image_column: str = None, skip_metadata: bool = False
+):
     if image_column is None and not skip_metadata:
         raise ValueError("'image_column' is missing")
     if not os.path.isdir(dataset_dir):
@@ -290,12 +306,16 @@ def extract_and_process_image_archives(dataset_dir: str, image_column: str = Non
             )
 
         try:
-            with zipfile.ZipFile(os.path.join(dataset_dir, "images.zip"), "r") as zip_ref:
+            with zipfile.ZipFile(
+                os.path.join(dataset_dir, "images.zip"), "r"
+            ) as zip_ref:
                 zip_ref.extractall(os.path.join(dataset_dir, "images"))
         except Exception as e:
-            print(f"Couldn't extract images.zip file '{os.path.join(dataset_dir, 'images.zip')}', e => {e}")
+            print(
+                f"Couldn't extract images.zip file '{os.path.join(dataset_dir, 'images.zip')}', e => {e}"
+            )
             raise Exception("Couldn't extract images.zip file")
-        
+
         if skip_metadata:
             return os.path.join(dataset_dir, "images")
 
@@ -329,7 +349,7 @@ def resolve_dataset(dataset_name_or_id, **kwargs):
         is_uuid = str(obj) == dataset_name_or_id
     except ValueError:
         is_uuid = False
-    
+
     if is_uuid:
         mlops_client = BudMLOpsClient()
         dataset = mlops_client.fetch_dataset(dataset_id=dataset_name_or_id)
@@ -342,8 +362,12 @@ def resolve_dataset(dataset_name_or_id, **kwargs):
         return dataset_name_or_id, "hf", is_uuid
     elif dataset_name_or_id.startswith("s3://"):
         from bud_ecosystem_utils.blob import BlobService
+
         blob_service = BlobService()
-        savepath = blob_service.download_file(dataset_name_or_id, os.path.join(Path.home(), ".cache", "bud_ecosystem"))
+        basepath = kwargs.get("basepath", Path.home())
+        savepath = blob_service.download_file(
+            dataset_name_or_id, os.path.join(basepath, ".cache", "bud_ecosystem")
+        )
     else:
         raise NotImplementedError("Only supports Hugging Face and AWS S3 datasets")
 
@@ -361,7 +385,7 @@ def resolve_model(model_name_or_id, **kwargs):
         is_uuid = str(obj) == model_name_or_id
     except ValueError:
         is_uuid = False
-    
+
     if is_uuid:
         mlops_client = BudMLOpsClient()
         model = mlops_client.fetch_model(model_id=model_name_or_id)
@@ -371,4 +395,3 @@ def resolve_model(model_name_or_id, **kwargs):
         return model_name_or_id, "hf", is_uuid
     else:
         raise NotImplementedError("Only supports Hugging Face models")
-    
