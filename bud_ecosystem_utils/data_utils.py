@@ -353,8 +353,9 @@ def resolve_dataset(dataset_name_or_id, **kwargs):
         from bud_ecosystem_utils.blob import BlobService
 
         blob_service = BlobService()
+        basepath = kwargs.get("basepath", Path.home())
         savepath = blob_service.download_file(
-            dataset_name_or_id, os.path.join(Path.home(), ".cache", "bud_ecosystem")
+            dataset_name_or_id, os.path.join(basepath, ".cache", "bud_ecosystem")
         )
     else:
         raise NotImplementedError("Only supports Hugging Face and AWS S3 datasets")
