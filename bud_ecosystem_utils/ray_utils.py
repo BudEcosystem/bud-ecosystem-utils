@@ -22,6 +22,16 @@ def submit_job_to_ray(
                 args += (f"--{key}", value if len(value.split()) == 1 else f'"{value}"')
             elif value == True and key in store_true_args:
                 args += (f"--{key}",)
+    elif isinstance(data, list):
+        args = ()
+        store_true_args = store_true_args or []
+        for entry in data:
+            key, value = entry["name"], entry["value"]
+            if value is not None and key not in store_true_args:
+                value = str(value)
+                args += (f"--{key}", value if len(value.split()) == 1 else f'"{value}"')
+            elif value == True and key in store_true_args:
+                args += (f"--{key}",)
     elif isinstance(data, tuple):
         args = data
     else:
