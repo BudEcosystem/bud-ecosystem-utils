@@ -10,7 +10,7 @@ dapr = "^1.11.0"
 tqdm = "^4.66.0"
 smart-open = {extras = ["s3"], version = "^6.4.0"}
 ray = "^2.7.0"
-huggingface-hub = "^0.16.4"
+huggingface-hub = "^0.19.4"
 
 [tool.poetry.dev-dependencies]
 
