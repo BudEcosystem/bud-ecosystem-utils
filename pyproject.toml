@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bud_ecosystem_utils"
-version = "0.21.1"
+version = "0.21.2"
 description = ""
 authors = ["Rahul V Ramesh <rahulvramesh@hotmail.com>"]
 
@@ -8,11 +8,10 @@ authors = ["Rahul V Ramesh <rahulvramesh@hotmail.com>"]
 python = "^3.9"
 dapr = "^1.11.0"
 tqdm = "^4.66.0"
-smart-open = {extras = ["s3"], version = "^6.4.0"}
-ray = "^2.7.0"
-huggingface-hub = "^0.19.4"
 pydantic = "^2.4.2"
-pydantic_core = "^2.10.1"
+smart-open = {extras = ["s3"], version = "^6.4.0"}
+ray = "2.7.0"
+huggingface-hub = "^0.19.4"
 
 [tool.poetry.dev-dependencies]
 
