@@ -95,7 +95,7 @@ def update_service_registry(client: DaprClient, job_topic: str) -> None:
             continue
 
 
-def publish_node_registry_event(client: DaprClient, node_info: dict) -> Node:
+def publish_node_registry_event(client: DaprClient, node_info: dict) -> None:
     try:
         client.publish_event(
             pubsub_name=EVENT_PUBSUB_NAME,
