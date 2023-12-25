@@ -15,11 +15,11 @@ from bud_ecosystem_utils.logger import setup_logger
 
 logger = setup_logger(__name__, logging.DEBUG)
 
-
 # Constants for state store and service registry
 STORE_NAME = os.getenv("BUD_STATE_STORE", "bud-state-store")
 SERVICE_REGISTRY_KEY = os.getenv("BUD_SERVICE_REGISTRY_KEY", "service-registry")
 
+EVENT_PUBSUB_NAME = os.getenv("EVENT_PUBSUB_NAME", "bud-redis-queue")
 def store_node(client: DaprClient, node_info: dict) -> None:
     """
     Save node information to a Dapr state store.
@@ -42,14 +42,15 @@ def store_node(client: DaprClient, node_info: dict) -> None:
         )
 
         logger.info(f"State for {node_info.get('topic')} initialized successfully.")
-        
+
     except KeyError:
         logger.error("Required keys missing in node_info.")
         raise Exception("Required keys missing in node_info.")
-    
+
     except Exception as e:
         logger.error(f"Error in store_node: {str(e)}")
         raise e
+
 
 def update_service_registry(client: DaprClient, job_topic: str) -> None:
     """
@@ -93,7 +94,21 @@ def update_service_registry(client: DaprClient, job_topic: str) -> None:
             logger.error(f"Error in update_service_registry: {str(e)}")
             continue
 
-def register_node(client: DaprClient, node_info: dict)->None:
+
+def publish_node_registry_event(client: DaprClient, node_info: dict) -> Node:
+    try:
+        client.publish_event(
+            pubsub_name=EVENT_PUBSUB_NAME,
+            topic_name="new-node-added",
+            data=json.dumps(node_info),
+            data_content_type="application/json",
+        )
+    except Exception as e:
+        logger.error(f"Error in Registry Event: {e}")
+        raise e
+
+
+def register_node(client: DaprClient, node_info: dict) -> None:
     """
     Register a node in the Dapr state store.
 
@@ -106,10 +121,14 @@ def register_node(client: DaprClient, node_info: dict)->None:
         KeyError: If any of the required keys in node_info are missing.
     """
     try:
-    
+
         job_topic = node_info.get("topic")
         store_node(client, node_info)
         update_service_registry(client, job_topic)
+
+        # Publish Node
+        publish_node_registry_event(client,node_info)
+
     except KeyError:
         logger.error("Required keys missing in node_info.")
         raise Exception("Required keys missing in node_info.")

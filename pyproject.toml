@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "bud_ecosystem_utils"
-version = "0.17.0"
+version = "0.18.0"
 description = ""
 authors = ["Rahul V Ramesh <rahulvramesh@hotmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 dapr = "^1.11.0"
+aiohttp = "^3.9.1"
 
 [tool.poetry.dev-dependencies]
 
