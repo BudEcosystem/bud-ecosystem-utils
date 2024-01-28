@@ -1,7 +1,7 @@
 import logging
-from elasticapm.handlers.logging import LoggingHandler
-from elasticapm.contrib.starlette import make_apm_client
-from pythonjsonlogger import jsonlogger
+# from elasticapm.handlers.logging import LoggingHandler
+# from elasticapm.contrib.starlette import make_apm_client
+# from pythonjsonlogger import jsonlogger
 import os
 
 
@@ -13,7 +13,7 @@ apm_config = {
     "ENVIRONMENT": os.getenv("APM_ENVIRONMENT", "development"),
 }
 
-apm_client = make_apm_client(apm_config)  # Create an APM client instance
+# apm_client = make_apm_client(apm_config)  # Create an APM client instance
 
 
 def setup_logger(name: str, level=logging.INFO) -> logging.Logger:
@@ -28,30 +28,30 @@ def setup_logger(name: str, level=logging.INFO) -> logging.Logger:
     logger.setLevel(level)
 
     # Setup Elastic APM Logging Handler
-    apm_handler = LoggingHandler(client=apm_client)
-    apm_handler.setLevel(logging.ERROR)  # Set the logging level for APM logs
+    # apm_handler = LoggingHandler(client=apm_client)
+    # apm_handler.setLevel(logging.ERROR)  # Set the logging level for APM logs
 
     # Setup Console Logging Handler
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(level)
+    # console_handler = logging.StreamHandler()
+    # console_handler.setLevel(level)
 
-    # Create a formatter and set it for both handlers
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
+    # # Create a formatter and set it for both handlers
+    # formatter = logging.Formatter(
+    #     "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    # )
 
-    formatterConsole = jsonlogger.JsonFormatter(
-        fmt="%(asctime)s %(levelname)s %(name)s %(message)s %(pathname)s %(filename)s %(lineno)d",
-        datefmt="%Y-%m-%dT%H:%M:%S",
-    )
+    # formatterConsole = jsonlogger.JsonFormatter(
+    #     fmt="%(asctime)s %(levelname)s %(name)s %(message)s %(pathname)s %(filename)s %(lineno)d",
+    #     datefmt="%Y-%m-%dT%H:%M:%S",
+    # )
 
-    # Setup Logstach Format
+    # # Setup Logstach Format
 
-    apm_handler.setFormatter(formatterConsole)
-    console_handler.setFormatter(formatterConsole)
+    # #apm_handler.setFormatter(formatterConsole)
+    # console_handler.setFormatter(formatterConsole)
 
-    # Add Handlers to the Logger
-    logger.addHandler(console_handler)
-    logger.addHandler(apm_handler)
+    # # Add Handlers to the Logger
+    # logger.addHandler(console_handler)
+    # #logger.addHandler(apm_handler)
 
     return logger
